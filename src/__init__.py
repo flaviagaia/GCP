@@ -1,2 +1,2 @@
-"""Classic ML portfolio bundle."""
+"""Compatibility package for root-level tooling."""
 

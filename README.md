@@ -4,6 +4,38 @@
 
 Este repositório reúne três projetos de **ML clássico** pensados como portfólio técnico: `credit default prediction`, `customer churn prediction` e `fraud detection baseline`.
 
+### Organização do monorepo
+
+O repositório foi reorganizado para ter **uma pasta por projeto**, separando:
+
+- `projects/classic_ml/`
+  Contém os projetos executáveis que já foram implementados.
+- `projects/gcp_blueprints/`
+  Contém os projetos sugeridos como blueprints arquiteturais no ecossistema GCP.
+
+Estrutura principal:
+
+```text
+GCP/
+├── projects/
+│   ├── classic_ml/
+│   │   ├── credit_default_prediction/
+│   │   ├── customer_churn_prediction/
+│   │   └── fraud_detection_baseline/
+│   └── gcp_blueprints/
+│       ├── credit-risk-scoring-platform/
+│       ├── customer-churn-analytics/
+│       ├── document-intake-automation/
+│       ├── document-intelligence-lake/
+│       ├── fraud-stream-monitoring/
+│       ├── ml-observability-gcp/
+│       ├── risk-executive-dashboard/
+│       └── ticket-triage-api/
+├── src/
+├── tests/
+└── main.py
+```
+
 ### Projetos incluídos
 
 1. `credit_default_prediction`
@@ -42,6 +74,14 @@ O repositório foi estruturado como um bundle único para manter o ciclo de expe
   Camada de modelagem, comparação de candidatos, seleção de melhor baseline e consolidação das métricas.
 - [tests/test_portfolio.py](tests/test_portfolio.py)
   Validação automatizada de integridade estrutural e de qualidade mínima dos resultados.
+
+Os módulos executáveis vivem agora em:
+
+- [projects/classic_ml/credit_default_prediction/project.py](projects/classic_ml/credit_default_prediction/project.py)
+- [projects/classic_ml/customer_churn_prediction/project.py](projects/classic_ml/customer_churn_prediction/project.py)
+- [projects/classic_ml/fraud_detection_baseline/project.py](projects/classic_ml/fraud_detection_baseline/project.py)
+
+E os projetos futuros/sugeridos foram organizados como blueprints individuais em `projects/gcp_blueprints/`, cada um com seu próprio README de escopo.
 
 ### Modelos utilizados
 
@@ -245,6 +285,15 @@ As sugestões acima seguem o catálogo oficial de produtos do Google Cloud, com 
 ## English
 
 This repository bundles three **classic ML** portfolio projects: `credit default prediction`, `customer churn prediction`, and a `fraud detection baseline`.
+
+### Monorepo layout
+
+The repository is now organized with **one folder per project**, split into:
+
+- `projects/classic_ml/`
+  Executable classic ML projects already implemented.
+- `projects/gcp_blueprints/`
+  GCP project blueprints proposed for future implementation.
 
 ### Included projects
 

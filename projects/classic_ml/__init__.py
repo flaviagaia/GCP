@@ -1,0 +1,2 @@
+"""Classic ML projects package."""
+
