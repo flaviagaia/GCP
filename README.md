@@ -77,6 +77,45 @@ No caso de fraude, a presença simultânea de um baseline supervisionado e de um
 - classificação com rótulo explícito;
 - identificação de comportamento raro sem depender integralmente de labels.
 
+### Roadmap de projetos com GCP
+
+Além do bundle atual de ML clássico, este repositório também serve como base conceitual para evoluções orientadas a Google Cloud Platform. A ideia é mapear uma ferramenta principal do GCP para um caso de uso de portfólio com valor arquitetural claro.
+
+| Ferramenta GCP | Projeto sugerido | Papel técnico |
+| --- | --- | --- |
+| `Vertex AI` | `credit-risk-scoring-platform` | treino, serving e explicabilidade de modelos de risco |
+| `BigQuery` | `customer-churn-analytics` | feature mart, analytics e scoring em larga escala |
+| `Cloud Run` | `ticket-triage-api` | serving stateless de inferência ou regras |
+| `Cloud Storage` | `document-intelligence-lake` | armazenamento de datasets, imagens e artefatos |
+| `Pub/Sub` | `fraud-stream-monitoring` | ingestão orientada a eventos |
+| `Dataflow` | `fraud-stream-monitoring` | processamento stream/batch e enriquecimento |
+| `Document AI` | `document-intake-automation` | extração estruturada de documentos |
+| `Looker Studio` | `risk-executive-dashboard` | visualização executiva de KPIs e SLAs |
+| `Cloud Monitoring + Logging` | `ml-observability-gcp` | observabilidade de pipelines e serviços |
+| `Apigee` | `decisioning-api-gateway` | governança, segurança e exposição de APIs |
+
+### Como este repositório se conecta com GCP
+
+Os três projetos atuais são propositalmente independentes de cloud para manter:
+
+- reprodutibilidade local;
+- baixo custo de execução;
+- validação rápida em ambiente de portfólio.
+
+Mas eles podem evoluir diretamente para GCP:
+
+- `credit_default_prediction` -> `Vertex AI + BigQuery + Cloud Run`
+- `customer_churn_prediction` -> `BigQuery + Vertex AI + Looker Studio`
+- `fraud_detection_baseline` -> `Pub/Sub + Dataflow + BigQuery + Vertex AI`
+
+Essa transição é natural porque o núcleo analítico já está isolado em pipelines versionáveis e testáveis.
+
+### Referência de serviços
+
+As sugestões acima seguem o catálogo oficial de produtos do Google Cloud, com destaque para `BigQuery`, `Cloud Run`, `Vertex AI`, `Cloud Storage`, `Looker`, `Apigee`, `Document AI` e demais serviços da plataforma:
+
+- [Google Cloud products](https://cloud.google.com/products/)
+
 ---
 
 ## English
@@ -105,3 +144,30 @@ This repository bundles three **classic ML** portfolio projects: `credit default
 - `data/processed/classic_ml_portfolio_report.json`
 
 This artifact is generated at runtime and is not versioned.
+
+### GCP project ideas mapped to core services
+
+Besides the current classic ML bundle, this repository also acts as a planning base for GCP-oriented portfolio projects, mapping core Google Cloud services to concrete implementation ideas.
+
+| GCP service | Suggested project | Technical role |
+| --- | --- | --- |
+| `Vertex AI` | `credit-risk-scoring-platform` | model training, deployment, and explainability |
+| `BigQuery` | `customer-churn-analytics` | analytical warehouse and feature store |
+| `Cloud Run` | `ticket-triage-api` | stateless inference serving |
+| `Cloud Storage` | `document-intelligence-lake` | artifact and raw data storage |
+| `Pub/Sub` | `fraud-stream-monitoring` | event ingestion |
+| `Dataflow` | `fraud-stream-monitoring` | stream and batch processing |
+| `Document AI` | `document-intake-automation` | structured extraction from documents |
+| `Looker Studio` | `risk-executive-dashboard` | BI layer for operational KPIs |
+| `Cloud Monitoring + Logging` | `ml-observability-gcp` | production observability |
+| `Apigee` | `decisioning-api-gateway` | API governance and exposure |
+
+### How the current bundle can evolve to GCP
+
+- `credit_default_prediction` -> `Vertex AI + BigQuery + Cloud Run`
+- `customer_churn_prediction` -> `BigQuery + Vertex AI + Looker Studio`
+- `fraud_detection_baseline` -> `Pub/Sub + Dataflow + BigQuery + Vertex AI`
+
+Official services reference:
+
+- [Google Cloud products](https://cloud.google.com/products/)
