@@ -81,6 +81,51 @@ No caso de fraude, a presença simultânea de um baseline supervisionado e de um
 
 Além do bundle atual de ML clássico, este repositório também serve como base conceitual para evoluções orientadas a Google Cloud Platform. A ideia é mapear uma ferramenta principal do GCP para um caso de uso de portfólio com valor arquitetural claro.
 
+### Arquitetura GCP de referência
+
+O desenho abaixo resume uma arquitetura cloud típica para evoluir os projetos deste repositório do modo local para um ambiente orientado a serviços gerenciados no GCP.
+
+```mermaid
+flowchart LR
+    A["Aplicações / Eventos / Uploads"] --> B["Pub/Sub"]
+    A --> C["Cloud Storage"]
+    B --> D["Dataflow"]
+    C --> D
+    D --> E["BigQuery"]
+    C --> F["Document AI"]
+    F --> E
+    E --> G["Vertex AI"]
+    G --> H["Cloud Run"]
+    E --> I["Looker Studio"]
+    H --> J["Apigee"]
+    H --> K["Cloud Monitoring + Logging"]
+    G --> K
+    D --> K
+```
+
+### O que cada ferramenta faz
+
+- `Cloud Storage`
+  Funciona como camada de armazenamento bruto para arquivos, datasets, imagens, documentos e artefatos intermediários.
+- `Pub/Sub`
+  Atua como barramento de eventos para ingestão assíncrona, especialmente útil quando o sistema recebe transações, uploads ou sinais em tempo real.
+- `Dataflow`
+  Faz o processamento distribuído de dados em lote ou streaming, preparando e enriquecendo registros antes do consumo analítico ou preditivo.
+- `BigQuery`
+  Serve como data warehouse analítico, feature mart e camada de consulta escalável para exploração, scoring e reporting.
+- `Document AI`
+  Extrai estrutura e campos de documentos, útil para OCR e intake de formulários, contratos e comprovantes.
+- `Vertex AI`
+  Centraliza treino, serving, gestão de modelos, embeddings e workloads de IA/ML.
+- `Cloud Run`
+  Publica APIs e serviços stateless em contêineres, ideal para inferência, scoring e regras de decisão.
+- `Looker Studio`
+  Entrega dashboards executivos e camadas visuais de BI para monitorar KPIs, SLAs e métricas de negócio.
+- `Apigee`
+  Adiciona governança, segurança, autenticação, rate limit e gestão do ciclo de vida das APIs expostas.
+- `Cloud Monitoring + Logging`
+  Dá observabilidade operacional sobre latência, falhas, throughput, logs e comportamento dos pipelines e serviços.
+
 | Ferramenta GCP | Projeto sugerido | Papel técnico |
 | --- | --- | --- |
 | `Vertex AI` | `credit-risk-scoring-platform` | treino, serving e explicabilidade de modelos de risco |
@@ -148,6 +193,51 @@ This artifact is generated at runtime and is not versioned.
 ### GCP project ideas mapped to core services
 
 Besides the current classic ML bundle, this repository also acts as a planning base for GCP-oriented portfolio projects, mapping core Google Cloud services to concrete implementation ideas.
+
+### Reference GCP architecture
+
+The diagram below summarizes a cloud architecture pattern that can be used to evolve these local ML projects into a managed GCP stack.
+
+```mermaid
+flowchart LR
+    A["Applications / Events / Uploads"] --> B["Pub/Sub"]
+    A --> C["Cloud Storage"]
+    B --> D["Dataflow"]
+    C --> D
+    D --> E["BigQuery"]
+    C --> F["Document AI"]
+    F --> E
+    E --> G["Vertex AI"]
+    G --> H["Cloud Run"]
+    E --> I["Looker Studio"]
+    H --> J["Apigee"]
+    H --> K["Cloud Monitoring + Logging"]
+    G --> K
+    D --> K
+```
+
+### What each GCP service does
+
+- `Cloud Storage`
+  Raw storage layer for files, images, datasets, and intermediate artifacts.
+- `Pub/Sub`
+  Event bus for asynchronous ingestion and real-time decoupling.
+- `Dataflow`
+  Distributed data processing layer for batch and streaming enrichment pipelines.
+- `BigQuery`
+  Analytical warehouse, feature mart, and scalable SQL layer.
+- `Document AI`
+  Structured extraction layer for document understanding workloads.
+- `Vertex AI`
+  Managed platform for model training, deployment, embeddings, and ML lifecycle tasks.
+- `Cloud Run`
+  Stateless container serving layer for APIs and inference services.
+- `Looker Studio`
+  BI and dashboard layer for KPIs, SLAs, and business monitoring.
+- `Apigee`
+  API governance layer with security, rate limiting, and lifecycle management.
+- `Cloud Monitoring + Logging`
+  Operational observability layer for metrics, logs, failures, and latency.
 
 | GCP service | Suggested project | Technical role |
 | --- | --- | --- |
