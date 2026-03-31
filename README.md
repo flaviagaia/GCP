@@ -30,6 +30,19 @@ O foco deste repositório é mostrar fundamentos de modelagem clássica com:
 - `scikit-learn`
 - `unittest`
 
+### Topologia do repositório
+
+O repositório foi estruturado como um bundle único para manter o ciclo de experimentação pequeno e permitir comparação homogênea entre problemas de classificação binária e detecção de anomalias:
+
+- [main.py](main.py)
+  Ponto de entrada consolidado que executa os três projetos e persiste o artefato analítico agregado.
+- [src/data_factory.py](src/data_factory.py)
+  Camada de geração de datasets sintéticos reproduzíveis, usando sementes fixas e atributos derivados com semântica de negócio.
+- [src/projects.py](src/projects.py)
+  Camada de modelagem, comparação de candidatos, seleção de melhor baseline e consolidação das métricas.
+- [tests/test_portfolio.py](tests/test_portfolio.py)
+  Validação automatizada de integridade estrutural e de qualidade mínima dos resultados.
+
 ### Modelos utilizados
 
 #### Credit Default Prediction
@@ -43,6 +56,21 @@ O foco deste repositório é mostrar fundamentos de modelagem clássica com:
 #### Fraud Detection Baseline
 - `Logistic Regression` com `class_weight="balanced"`
 - `IsolationForest`
+
+### Estratégia de modelagem
+
+Cada projeto foi desenhado como um benchmark pequeno, mas tecnicamente coerente:
+
+- `credit_default_prediction`
+  Compara um modelo linear regularizado com um ensemble baseado em árvores para capturar relações não lineares entre renda, endividamento e comportamento.
+- `customer_churn_prediction`
+  Reusa a mesma família de modelos para comparar interpretabilidade linear contra capacidade de capturar interações entre engajamento, suporte e tenure.
+- `fraud_detection_baseline`
+  Coloca lado a lado:
+  - uma abordagem supervisionada para cenário com rótulo;
+  - uma abordagem de anomalia para cenário com baixa densidade de fraude e cobertura limitada de labels.
+
+Essa escolha é deliberada: o objetivo não é maximizar sofisticação algorítmica, mas demonstrar como selecionar um baseline robusto, mensurável e operacionalmente explicável.
 
 ### Estrutura dos dados
 
@@ -60,6 +88,19 @@ O pipeline consolidado salva:
 
 Esse arquivo é gerado em runtime e não é versionado.
 
+### Contrato do artefato
+
+O relatório consolidado é serializado em `JSON` com uma lista de projetos. Cada item contém, no mínimo:
+
+- `project_name`
+- `target_name`
+- `sample_size`
+- `positive_rate`
+- `selected_model`
+- métricas de desempenho do baseline selecionado
+
+No caso de fraude, o artefato também preserva um bloco de `comparison`, permitindo inspecionar lado a lado a performance do classificador supervisionado e do detector de anomalias.
+
 ### Execução
 
 ```bash
@@ -76,6 +117,23 @@ No caso de fraude, a presença simultânea de um baseline supervisionado e de um
 
 - classificação com rótulo explícito;
 - identificação de comportamento raro sem depender integralmente de labels.
+
+### Semântica das métricas
+
+As métricas foram escolhidas para refletir propriedades diferentes do problema:
+
+- `ROC-AUC`
+  Mede capacidade de ordenação global entre classes e é útil para comparar candidatos.
+- `Average Precision`
+  Tem papel central nos cenários desbalanceados, principalmente em fraude.
+- `Precision`
+  Mostra o custo potencial de falsos positivos.
+- `Recall`
+  Mede cobertura sobre o evento-alvo, especialmente importante para inadimplência, churn e fraude.
+- `F1`
+  Resume o trade-off entre `precision` e `recall` em um único valor.
+
+No benchmark de fraude, a seleção final favorece `average_precision`, porque esse cenário é mais sensível à recuperação de eventos raros do que à simples separação global de classes.
 
 ### Roadmap de projetos com GCP
 
@@ -155,6 +213,27 @@ Mas eles podem evoluir diretamente para GCP:
 
 Essa transição é natural porque o núcleo analítico já está isolado em pipelines versionáveis e testáveis.
 
+### Tradução arquitetural para GCP
+
+Pensando em ambiente produtivo, a decomposição por camadas ficaria assim:
+
+- `ingestão`
+  `Pub/Sub` e `Cloud Storage`
+- `preparação e enriquecimento`
+  `Dataflow`
+- `camada analítica e feature store`
+  `BigQuery`
+- `treino e serving`
+  `Vertex AI`
+- `exposição operacional`
+  `Cloud Run` e `Apigee`
+- `monitoramento`
+  `Cloud Monitoring + Logging`
+- `consumo executivo`
+  `Looker Studio`
+
+Isso mostra que o bundle atual já serve como núcleo de lógica analítica, enquanto o GCP entraria como camada de operacionalização, escala e governança.
+
 ### Referência de serviços
 
 As sugestões acima seguem o catálogo oficial de produtos do Google Cloud, com destaque para `BigQuery`, `Cloud Run`, `Vertex AI`, `Cloud Storage`, `Looker`, `Apigee`, `Document AI` e demais serviços da plataforma:
@@ -184,11 +263,61 @@ This repository bundles three **classic ML** portfolio projects: `credit default
 - metrics suitable for imbalanced classification
 - JSON analytical artifact generation
 
+### Repository topology
+
+- [main.py](main.py)
+  Consolidated entry point that runs the full bundle and writes the aggregated analytical report.
+- [src/data_factory.py](src/data_factory.py)
+  Synthetic dataset factory with deterministic seeds and business-like derived variables.
+- [src/projects.py](src/projects.py)
+  Modeling layer, candidate comparison, baseline selection, and result packaging.
+- [tests/test_portfolio.py](tests/test_portfolio.py)
+  Regression checks for structural integrity and minimum metric quality.
+
+### Modeling strategy
+
+- `credit_default_prediction`
+  Linear versus tree-based classification for default risk.
+- `customer_churn_prediction`
+  Linear versus tree-based classification for customer attrition.
+- `fraud_detection_baseline`
+  Supervised classification versus anomaly detection.
+
+The point is to show how to build strong classical baselines with clear evaluation logic rather than maximizing modeling complexity.
+
 ### Runtime artifact
 
 - `data/processed/classic_ml_portfolio_report.json`
 
 This artifact is generated at runtime and is not versioned.
+
+### Artifact contract
+
+Each project entry in the JSON artifact contains:
+
+- `project_name`
+- `target_name`
+- `sample_size`
+- `positive_rate`
+- `selected_model`
+- performance metrics for the selected baseline
+
+The fraud benchmark also includes a `comparison` block so the supervised and anomaly-based approaches can be inspected side by side.
+
+### Metric semantics
+
+- `ROC-AUC`
+  Global ranking quality across classes.
+- `Average Precision`
+  Especially relevant for imbalanced problems such as fraud.
+- `Precision`
+  Proxy for false-positive pressure.
+- `Recall`
+  Coverage over the positive class.
+- `F1`
+  Precision/recall balance summary.
+
+In the fraud benchmark, final model preference is driven primarily by `average_precision`, which is a better fit for rare-event retrieval quality.
 
 ### GCP project ideas mapped to core services
 
@@ -257,6 +386,23 @@ flowchart LR
 - `credit_default_prediction` -> `Vertex AI + BigQuery + Cloud Run`
 - `customer_churn_prediction` -> `BigQuery + Vertex AI + Looker Studio`
 - `fraud_detection_baseline` -> `Pub/Sub + Dataflow + BigQuery + Vertex AI`
+
+### Workload-to-service mapping on GCP
+
+- `ingestion`
+  `Pub/Sub` and `Cloud Storage`
+- `processing`
+  `Dataflow`
+- `analytical and feature layer`
+  `BigQuery`
+- `training and serving`
+  `Vertex AI`
+- `operational exposure`
+  `Cloud Run` and `Apigee`
+- `observability`
+  `Cloud Monitoring + Logging`
+- `executive consumption`
+  `Looker Studio`
 
 Official services reference:
 
